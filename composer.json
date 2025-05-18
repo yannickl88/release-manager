@@ -1,0 +1,14 @@
+{
+    "name": "yannickl88/release-manager",
+    "description": "Release manager",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "vendor/symfony/console": "^7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
