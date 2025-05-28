@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\FileUtils;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -50,21 +51,7 @@ class CleanupCommand extends Command
             $directory = $releases[$i];
             $output->writeln('<info>Removing ' . $directory . '.</info>');
 
-            $files = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::CHILD_FIRST
-            );
-
-            /** @var \SplFileInfo $fileinfo */
-            foreach ($files as $fileinfo) {
-                if ($fileinfo->isDir()) {
-                    rmdir($fileinfo->getPath() . DIRECTORY_SEPARATOR . $fileinfo->getFilename());
-                } else {
-                    unlink($fileinfo->getPath() . DIRECTORY_SEPARATOR . $fileinfo->getFilename());
-                }
-            }
-
-            rmdir($directory);
+            FileUtils::removeDirectory($directory);
         }
 
         return Command::SUCCESS;

@@ -6,6 +6,9 @@ namespace App\Command;
 use App\Lock\Locker;
 use App\Lock\LockException;
 use App\Lock\ProjectUninitializedException;
+use App\Platform\AbstractPlatform;
+use App\Platform\ExecutionException;
+use App\Platform\UntarException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,8 +17,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ReleaseCommand extends Command
 {
-    public function __construct(private readonly Locker $locker)
-    {
+    public function __construct(
+        private readonly Locker $locker,
+        private readonly AbstractPlatform $platform,
+    ) {
         parent::__construct('release');
     }
 
@@ -49,42 +54,38 @@ class ReleaseCommand extends Command
 
         mkdir($directory, 0755, true);
 
-        system(
-            'tar -xzf ' . escapeshellarg($input->getArgument('archive')) . ' -C ' . escapeshellarg($directory),
-            $success
-        );
-        if (0 !== $success) {
+        try {
+            $this->platform->extractTar($input->getArgument('archive'), $directory);
+        } catch (UntarException $e) {
             $output->writeln('<error>Failed to extract achieve.</error>');
 
             return Command::FAILURE;
         }
 
-        $postInstallScript = dirname($directory, 2) . "/post_install.sh";
+        $release = basename($directory);
+        $version = $input->getOption('release') ?? $release;
 
-        if (file_exists($postInstallScript)) {
-            $release = basename($directory);
-            $version = $input->getOption('release') ?? $release;
-
-            system(
-                'RELEASE=' . escapeshellarg($release) . ' ' .
-                'VERSION=' . escapeshellarg($version) . ' ' .
-                'RELEASE_DIR=' . escapeshellarg($directory) . ' ' .
-                'SHARED_DIR=' . escapeshellarg(dirname($directory, 2) . '/shared') . ' ' .
-                '/bin/bash ' .
-                escapeshellarg($postInstallScript),
-                $success
+        try {
+            $this->platform->runExecutableFile(
+                'post_install',
+                dirname($directory, 2),
+                [
+                    'RELEASE' => $release,
+                    'VERSION' => $version,
+                    'RELEASE_DIR' => $directory,
+                    'SHARED_DIR' => dirname($directory, 2) . '/shared',
+                ]
             );
-            if (0 !== $success) {
-                $output->writeln('<error>Filed to run post install scripts</error>');
+        } catch (ExecutionException $e) {
+            $output->writeln('<error>Failed to run post install scripts.</error>');
 
-                return Command::FAILURE;
-            }
+            return Command::FAILURE;
         }
 
         try {
             $this->locker->finalizeRelease($input->getArgument('target'), $directory);
         } catch (LockException $e) {
-            $output->writeln('<error>Failed to finalize the release</error>');
+            $output->writeln('<error>Failed to finalize the release.</error>');
 
             return Command::FAILURE;
         }

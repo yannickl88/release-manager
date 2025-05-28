@@ -5,5 +5,4 @@ namespace App\Lock;
 
 class LockException extends \RuntimeException
 {
-
 }

@@ -3,8 +3,16 @@ declare(strict_types=1);
 
 namespace App\Lock;
 
+use App\Platform\AbstractPlatform;
+use App\Platform\ExecutionException;
+
 class Locker
 {
+    public function __construct(
+        private readonly AbstractPlatform $platform,
+    ) {
+    }
+
     public function nextReleaseDir(string $directory): string
     {
         $lockFile = realpath($directory) . '/.lock';
@@ -13,7 +21,7 @@ class Locker
             throw new ProjectUninitializedException();
         }
 
-        $fp = fopen($lockFile, 'c+');
+        $fp = fopen($lockFile, 'r+');
 
         try {
             if (!flock($fp, LOCK_EX | LOCK_NB)) {
@@ -70,14 +78,10 @@ class Locker
     public function finalizeRelease(string $directory, string $releaseDir): void {
         $symlink = realpath($directory) . '/current';
 
-        system(
-            'ln --symbolic --force --no-dereference ' .
-            escapeshellarg($releaseDir) . ' ' .
-            escapeshellarg($symlink),
-            $relinked
-        );
-        if (0 !== $relinked) {
-            throw new LockException();
+        try {
+            $this->platform->symlink($releaseDir, $symlink);
+        } catch (ExecutionException $e) {
+            throw new LockException(previous: $e);
         }
 
         file_put_contents(realpath($directory) . '/.lock', $releaseDir);

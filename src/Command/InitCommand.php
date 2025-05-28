@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Platform\AbstractPlatform;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,8 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class InitCommand extends Command
 {
-    public function __construct()
-    {
+    public function __construct(
+        private readonly AbstractPlatform $platform,
+    ) {
         parent::__construct('init');
     }
 
@@ -41,27 +43,31 @@ class InitCommand extends Command
         mkdir(dirname($lockFile) . "/shared", 0755, true);
         file_put_contents($lockFile, '');
 
-        $postInstallScript = dirname($lockFile) . "/post_install.sh";
-        file_put_contents($postInstallScript, "#! /bin/bash\n# Put post release scripts here, these will be ran after the release has been\n# setup but before switching the symlink. This is great to warm any caches etc.\n\n# The following extra ENV vars are defined:\n#  - RELEASE = Release number, this will always be sequential\n#  - VERSION = Can be user specified version number, if not specified, same as RELEASE\n#  - RELEASE_DIR = Directory in which the release is done\n#  - SHARED_DIR = Directory for any shared resources");
-        chmod($postInstallScript, 0744);
+        $this->platform->createExecutableFile(
+            'post_install',
+            dirname($lockFile),
+            "Put post release scripts here, these will be ran after the release has been\n" .
+            "setup but before switching the symlink. This is great to warm any caches etc.\n" .
+            "\n" .
+            "The following extra ENV vars are defined:\n" .
+            "  - RELEASE = Release number, this will always be sequential\n" .
+            "  - VERSION = Can be user specified version number, if not specified, same as RELEASE\n" .
+            "  - RELEASE_DIR = Directory in which the release is done\n" .
+            "  - SHARED_DIR = Directory for any shared resources\n"
+        );
 
         return Command::SUCCESS;
     }
 
     private function checkEnv(): ?string
     {
-        exec('ln --version', $output, $success);
-        if (0 !== $success) {
+        if (!$this->platform->exists('ln')) {
             return 'ln not found';
         }
-
-        exec('tar --version', $output, $success);
-        if (0 !== $success) {
+        if (!$this->platform->exists('tar')) {
             return 'tar not found';
         }
-
-        exec('bash --version', $output, $success);
-        if (0 !== $success) {
+        if (!$this->platform->exists('bash')) {
             return 'bash not found';
         }
 

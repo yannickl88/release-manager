@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\FileUtils;
 use App\Lock\Locker;
 use App\Lock\LockException;
 use App\Lock\ProjectUninitializedException;
@@ -44,21 +45,7 @@ class UnlockCommand extends Command
             return Command::SUCCESS;
         }
 
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
-        );
-
-        /** @var \SplFileInfo $fileinfo */
-        foreach ($files as $fileinfo) {
-            if ($fileinfo->isDir()) {
-                rmdir($fileinfo->getPath() . DIRECTORY_SEPARATOR . $fileinfo->getFilename());
-            } else {
-                unlink($fileinfo->getPath() . DIRECTORY_SEPARATOR . $fileinfo->getFilename());
-            }
-        }
-
-        rmdir($directory);
+        FileUtils::removeDirectory($directory);
 
         return Command::SUCCESS;
     }
