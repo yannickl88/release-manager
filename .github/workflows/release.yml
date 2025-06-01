@@ -30,6 +30,7 @@ jobs:
 
             -   name: Create PHAR
                 run: |
+                    sed -i "s/'dev'/'${{ github.ref_name }}'/g" index.php
                     box compile
                     mv index.phar release.phar
 

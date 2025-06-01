@@ -10,10 +10,13 @@ use App\Lock\Locker;
 use App\Platform\AbstractPlatform;
 use Symfony\Component\Console\Application;
 
+// Replace me with actual version
+$version = 'dev';
+
 $platform = AbstractPlatform::detect();
 $locker = new Locker($platform);
 
-$application = new Application();
+$application = new Application('Release manager', $version);
 $application->add(new InitCommand($platform));
 $application->add(new ReleaseCommand($locker, $platform));
 $application->add(new UnlockCommand($locker));
