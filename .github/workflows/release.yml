@@ -1,0 +1,42 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - '*'
+
+jobs:
+    deploy:
+        name: Deploy
+        runs-on: ubuntu-22.04
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Composer Install
+                uses: php-actions/composer@v6
+                with:
+                    php_version: 8.2
+                    args: --ignore-platform-reqs --no-dev
+
+            -   name: Setup PHP with tools
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.2
+                    tools: box
+
+            -   name: Create PHAR
+                run: |
+                    ./box compile
+                    mv index.phar release.phar
+
+            -   name: Create Release
+                uses: ncipollo/release-action@v1
+                with:
+                    token: ${{ secrets.GITHUB_TOKEN }}
+                    name: ${{ github.ref_name }}
+                    tag: ${{ github.ref_name }}
+                    allowUpdates: true
+                    artifacts: release.phar
+                    artifactContentType: application/x-php

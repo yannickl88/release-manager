@@ -72,6 +72,7 @@ php release.phar cleanup -k 5 /var/www/html/
 Simple example how it easily integrates into a deployment action for your application or website.
 
 ```yaml
+# .github/workflows/deploy.yml
 name: Deploy
 
 on: workflow_dispatch
@@ -106,7 +107,15 @@ jobs:
                     username: ${{ secrets.SSH_USERNAME }}
                     key: ${{ secrets.SSH_PRIVATE_KEY }}
                     script: "php deploy.phar deploy /var/www/html release.tar.gz"
+```
 
+```yaml
+# .github/workflows/unlock.yml
+name: Unlock
+
+on: workflow_dispatch
+
+jobs:
     unlock:
         name: Unlock
         runs-on: ubuntu-22.04
@@ -119,7 +128,15 @@ jobs:
                     username: ${{ secrets.SSH_USERNAME }}
                     key: ${{ secrets.SSH_PRIVATE_KEY }}
                     script: "php deploy.phar unlock /var/www/html"
+```
 
+```yaml
+# .github/workflows/rollback.yml
+name: Rollback
+
+on: workflow_dispatch
+
+jobs:
     rollback:
         name: Rollback
         runs-on: ubuntu-22.04
