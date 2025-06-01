@@ -40,12 +40,14 @@ class UnlockCommand extends Command
         }
 
         if (!file_exists($directory)) {
-            $output->writeln('<info>Cleanup not needed.</info>');
+            $output->writeln('<info>Deployment folder already unlocked</info>');
 
             return Command::SUCCESS;
         }
 
         FileUtils::removeDirectory($directory);
+
+        $output->writeln('<info>Deployment folder successfully unlocked</info>');
 
         return Command::SUCCESS;
     }

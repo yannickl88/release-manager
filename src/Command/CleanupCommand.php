@@ -42,14 +42,14 @@ class CleanupCommand extends Command
         $currentKey = array_search($current, $releases);
 
         if (false === $currentKey) {
-            $output->writeln('<error>Cannot determine the current release.</error>');
+            $output->writeln('<error>Cannot determine the current release</error>');
 
             return Command::FAILURE;
         }
 
         for ($i = 0; $i < $currentKey - ($releasesToKeep - 1); $i++) {
             $directory = $releases[$i];
-            $output->writeln('<info>Removing ' . $directory . '.</info>');
+            $output->writeln('<info>Removing ' . $directory . '</info>');
 
             FileUtils::removeDirectory($directory);
         }

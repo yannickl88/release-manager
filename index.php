@@ -10,12 +10,12 @@ use App\Lock\Locker;
 use App\Platform\AbstractPlatform;
 use Symfony\Component\Console\Application;
 
-$locker = new Locker();
 $platform = AbstractPlatform::detect();
+$locker = new Locker($platform);
 
 $application = new Application();
 $application->add(new InitCommand($platform));
-$application->add(new ReleaseCommand($locker));
+$application->add(new ReleaseCommand($locker, $platform));
 $application->add(new UnlockCommand($locker));
 $application->add(new RollbackCommand($locker));
 $application->add(new CleanupCommand());

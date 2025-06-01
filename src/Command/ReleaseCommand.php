@@ -47,7 +47,7 @@ class ReleaseCommand extends Command
         }
 
         if (file_exists($directory)) {
-            $output->writeln('<error>Target directory already exists, did previous release fail? Use unlock to clean up failed releases.</error>');
+            $output->writeln('<error>Target directory already exists, did previous release fail? Use unlock to clean up failed releases</error>');
 
             return Command::FAILURE;
         }
@@ -57,7 +57,7 @@ class ReleaseCommand extends Command
         try {
             $this->platform->extractTar($input->getArgument('archive'), $directory);
         } catch (UntarException $e) {
-            $output->writeln('<error>Failed to extract achieve.</error>');
+            $output->writeln('<error>Failed to extract achieve</error>');
 
             return Command::FAILURE;
         }
@@ -77,7 +77,7 @@ class ReleaseCommand extends Command
                 ]
             );
         } catch (ExecutionException $e) {
-            $output->writeln('<error>Failed to run post install scripts.</error>');
+            $output->writeln('<error>Failed to run post install scripts</error>');
 
             return Command::FAILURE;
         }
@@ -85,10 +85,12 @@ class ReleaseCommand extends Command
         try {
             $this->locker->finalizeRelease($input->getArgument('target'), $directory);
         } catch (LockException $e) {
-            $output->writeln('<error>Failed to finalize the release.</error>');
+            $output->writeln('<error>Failed to finalize the release</error>');
 
             return Command::FAILURE;
         }
+
+        $output->writeln('<info>Deployment successful to ' . $directory . '</info>');
 
         return Command::SUCCESS;
     }

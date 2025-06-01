@@ -94,6 +94,6 @@ class CleanupCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::FAILURE, $command->run($input, $output));
-        self::assertSame('Cannot determine the current release.', trim($output->fetch()));
+        self::assertSame('Cannot determine the current release', trim($output->fetch()));
     }
 }

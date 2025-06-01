@@ -105,7 +105,7 @@ class RollbackCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::FAILURE, $command->run($input, $output));
-        self::assertSame('Previous release could not be found, cannot rollback.', trim($output->fetch()));
+        self::assertSame('Previous release could not be found, cannot rollback', trim($output->fetch()));
     }
 
     public function testExecuteWithRelease(): void
@@ -161,6 +161,6 @@ class RollbackCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::FAILURE, $command->run($input, $output));
-        self::assertSame('Failed to finalize the release.', trim($output->fetch()));
+        self::assertSame('Failed to finalize the release', trim($output->fetch()));
     }
 }

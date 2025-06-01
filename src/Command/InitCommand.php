@@ -56,6 +56,8 @@ class InitCommand extends Command
             "  - SHARED_DIR = Directory for any shared resources\n"
         );
 
+        $output->writeln('<info>Initialization complete</info>');
+
         return Command::SUCCESS;
     }
 

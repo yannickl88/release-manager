@@ -101,7 +101,7 @@ class UnlockCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::SUCCESS, $command->run($input, $output));
-        self::assertSame('Cleanup not needed.', trim($output->fetch()));
+        self::assertSame('Deployment folder already unlocked', trim($output->fetch()));
         $this->assertOnlyReleases([1, 2]);
     }
 }

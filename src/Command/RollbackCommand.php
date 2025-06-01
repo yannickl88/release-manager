@@ -50,7 +50,7 @@ class RollbackCommand extends Command
             }
 
             if (!file_exists($directory)) {
-                $output->writeln('<error>Previous release could not be found, cannot rollback.</error>');
+                $output->writeln('<error>Previous release could not be found, cannot rollback</error>');
 
                 return Command::FAILURE;
             }
@@ -59,10 +59,12 @@ class RollbackCommand extends Command
         try {
             $this->locker->finalizeRelease($input->getArgument('target'), $directory);
         } catch (LockException $e) {
-            $output->writeln('<error>Failed to finalize the release.</error>');
+            $output->writeln('<error>Failed to finalize the release</error>');
 
             return Command::FAILURE;
         }
+
+        $output->writeln('<info>Rollback successful to ' . $directory . '</info>');
 
         return Command::SUCCESS;
     }

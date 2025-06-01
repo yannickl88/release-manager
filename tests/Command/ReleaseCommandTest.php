@@ -163,7 +163,7 @@ class ReleaseCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::FAILURE, $command->run($input, $output));
-        self::assertSame('Target directory already exists, did previous release fail? Use unlock to clean up failed releases.', trim($output->fetch()));
+        self::assertSame('Target directory already exists, did previous release fail? Use unlock to clean up failed releases', trim($output->fetch()));
     }
 
     public function testExecuteFailedToExtract(): void
@@ -185,7 +185,7 @@ class ReleaseCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::FAILURE, $command->run($input, $output));
-        self::assertSame('Failed to extract achieve.', trim($output->fetch()));
+        self::assertSame('Failed to extract achieve', trim($output->fetch()));
     }
 
     public function testExecuteFailedPostInstallScript(): void
@@ -213,7 +213,7 @@ class ReleaseCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::FAILURE, $command->run($input, $output));
-        self::assertSame('Failed to run post install scripts.', trim($output->fetch()));
+        self::assertSame('Failed to run post install scripts', trim($output->fetch()));
     }
 
     public function testExecuteFailedToFinalize(): void
@@ -244,6 +244,6 @@ class ReleaseCommandTest extends AbstractFileSystemTestCase
         $output = new BufferedOutput();
 
         self::assertSame(Command::FAILURE, $command->run($input, $output));
-        self::assertSame('Failed to finalize the release.', trim($output->fetch()));
+        self::assertSame('Failed to finalize the release', trim($output->fetch()));
     }
 }
