@@ -9,6 +9,8 @@ jobs:
     deploy:
         name: Deploy
         runs-on: ubuntu-22.04
+        permissions:
+            contents: write
 
         steps:
             -   name: Checkout
@@ -34,9 +36,6 @@ jobs:
             -   name: Create Release
                 uses: ncipollo/release-action@v1
                 with:
-                    token: ${{ secrets.GITHUB_TOKEN }}
-                    name: ${{ github.ref_name }}
-                    tag: ${{ github.ref_name }}
                     allowUpdates: true
                     artifacts: release.phar
                     artifactContentType: application/x-php
