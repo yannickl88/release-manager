@@ -35,7 +35,7 @@ class LinuxPlatform extends AbstractPlatform
         $file = $directory . '/' . $fileName . '.sh';
 
         if (file_exists($file)) {
-            $this->run('/bin/bash ' . escapeshellarg($file), array_map('escapeshellarg', $env));
+            $this->run('/bin/bash ' . escapeshellarg($file), $env);
         }
     }
 

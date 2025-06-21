@@ -60,6 +60,11 @@ class AbstractPlatformTest extends TestCase
         self::assertEquals("foobar\n", $this->platform->run('echo $TEST', ['TEST' => 'foobar']));
     }
 
+    public function testRunWithEnvSpecialChars(): void
+    {
+        self::assertEquals("f/ bar/#\n", $this->platform->run('echo $TEST', ['TEST' => 'f/ bar/#']));
+    }
+
     public function testRunCreationError(): void
     {
         try {
