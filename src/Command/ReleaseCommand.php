@@ -77,7 +77,12 @@ class ReleaseCommand extends Command
                 ]
             );
         } catch (ExecutionException $e) {
-            $output->writeln('<error>Failed to run post install scripts</error>');
+            $output->writeln('<error>Failed to run post install scripts, exit code: ' . $e->getCode() . '</error>');
+            $output->writeln('====== STDOUT ======');
+            $output->writeln($e->stdout);
+            $output->writeln('====== STDERR ======');
+            $output->writeln($e->stderr);
+            $output->writeln('====================');
 
             return Command::FAILURE;
         }
